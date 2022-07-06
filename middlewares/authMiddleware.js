@@ -1,5 +1,6 @@
 const {authService} = require("../services");
 const {OAuth} = require("../database");
+const {configs} = require("../constants");
 module.exports = {
     checkAccessToken: async (req, res, next) => {
         try {
@@ -8,7 +9,7 @@ module.exports = {
             if (!access_token)
                 return res.status(401).json('Invalid token');
 
-            await authService.checkToken(access_token, authService.ACCESS_TOKEN_SECRET);
+            await authService.checkToken(access_token, configs.ACCESS_TOKEN_SECRET);
 
             const tokenInfo = await OAuth.findOne({access_token}).populate('userId');
 
@@ -27,7 +28,7 @@ module.exports = {
             if (!refresh_token)
                 return res.status(401).json('Invalid token');
 
-            await authService.checkToken(refresh_token, authService.REFRESH_TOKEN_SECRET);
+            await authService.checkToken(refresh_token, configs.REFRESH_TOKEN_SECRET);
 
             const tokenInfo = await OAuth.findOne({refresh_token});
 

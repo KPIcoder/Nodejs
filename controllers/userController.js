@@ -1,20 +1,21 @@
 const {User} = require("../database");
-const {passwordService} = require("../services");
+const {passwordService, emailService} = require("../services");
+const {emailEnums} = require("../enums");
 
 class userController {
-    async getUsers (req, res, next) {
+    async getUsers(req, res, next) {
         try {
             const users = await User.find();
             if (!users) {
                 return res.status(400).json('Error in getting users');
             }
             res.json(users);
-        }
-        catch (e) {
+        } catch (e) {
             next(e);
         }
     }
-    async getUser (req, res, next) {
+
+    async getUser(req, res, next) {
         try {
             const {userId} = req.params;
             const user = await User.findOne({_id: userId});
@@ -22,37 +23,41 @@ class userController {
                 return res.status(400).json('Error in getting user');
             }
             res.json(user);
-        }
-        catch (e) {
+        } catch (e) {
             next(e);
         }
     }
-    async createUser (req, res, next) {
+
+    async createUser(req, res, next) {
         try {
-            const hashedPassword = await passwordService.hash(req.body.password);
+            const {email, name, password} = req.body
+            const hashedPassword = await passwordService.hash(password);
             const newUser = await User.create({...req.body, password: hashedPassword});
             if (!newUser) {
                 return res.status(400).json('Error in creating user');
             }
+
+            await emailService.send(email, emailEnums.Welcome, { name })
+
             res.status(201).json(newUser);
-        }
-        catch (e) {
+        } catch (e) {
             next(e);
         }
     }
-    async deleteUser (req, res, next) {
+
+    async deleteUser(req, res, next) {
         try {
             const {userId} = req.params;
             const deletedUser = await User.deleteOne({_id: userId});
             if (!deletedUser)
                 return res.status(400).json('Error in deleting user');
             res.json(deletedUser);
-        }
-        catch (e) {
+        } catch (e) {
             next(e);
         }
     }
-    async updateUser (req, res, next) {
+
+    async updateUser(req, res, next) {
         try {
             const {userId} = req.params;
             const hashedPassword = await passwordService.hash(req.body.password);
@@ -60,8 +65,7 @@ class userController {
             if (!updatedUser)
                 return res.status(400).json('Error in updating user');
             res.status(201).json('User updated successfully');
-        }
-        catch (e) {
+        } catch (e) {
             next(e);
         }
     }

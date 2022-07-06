@@ -1,12 +1,14 @@
+require('dotenv').config()
 const express = require('express');
 const mongoose = require('mongoose');
 
 const {userRouter, authRouter} = require("./routes");
+const {configs} = require("./constants");
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/test', () => {
-    console.log("database connected");
+mongoose.connect(configs.MONGO_URL, () => {
+    console.log(`database connected on ${configs.MONGO_URL}`);
 });
 
 app.use(express.json());
@@ -19,7 +21,7 @@ app.use('*', (req, res) => {
     res.status(404).json('Route not found');
 })
 
-app.listen(3001, ()=> {
-    console.log('Server started');
+app.listen(configs.PORT, ()=> {
+    console.log(`Server started on port ${configs.PORT}`);
 })
 

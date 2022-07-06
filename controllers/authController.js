@@ -1,5 +1,6 @@
 const {OAuth} = require("../database");
-const {passwordService, authService} = require("../services");
+const {emailEnums} = require("../enums");
+const {passwordService, authService, emailService} = require("../services");
 
 class authController {
     async login (req, res, next) {
