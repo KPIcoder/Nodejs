@@ -1,3 +1,4 @@
 module.exports = {
-    emailEnums: require('./emailActions')
+    emailEnums: require('./emailActions'),
+    passwordEnum: require('./passwordEnum'),
 }

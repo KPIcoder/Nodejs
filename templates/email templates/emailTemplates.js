@@ -6,6 +6,6 @@ module.exports = {
     },
     [emailEnums.ForgotPass]: {
         subject: 'Security issue notification',
-        template: '<div style="color: aqua">Looks like you have forgotten your password or someone is trying to access your account</div>'
+        template: 'forgotpass'
     }
 }

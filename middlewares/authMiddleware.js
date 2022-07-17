@@ -1,6 +1,7 @@
-const {authService} = require("../services");
-const {OAuth} = require("../database");
 const {configs} = require("../constants");
+const {OAuth, ActionTokens} = require("../database");
+const {authService} = require("../services");
+
 module.exports = {
     checkAccessToken: async (req, res, next) => {
         try {
@@ -32,13 +33,35 @@ module.exports = {
 
             const tokenInfo = await OAuth.findOne({refresh_token});
 
-            if(!tokenInfo)
+            if (!tokenInfo)
                 return res.status(401).json('Token not valid');
 
             req.tokenInfo = tokenInfo;
             next();
         } catch (e) {
+            next(e)
+        }
+    },
+    checkActionToken: (actionType) => async (req, res, next) => {
+        try {
+            const actionToken = req.headers.authorization.split(' ')[1];
 
+            if (!actionToken)
+                return res.status(401).json('Token not valid1')
+
+            await authService.checkToken(actionToken, actionType);
+
+
+            const tokenInfo = await ActionTokens.findOne({token: actionToken}).populate('userId');
+
+            if (!tokenInfo)
+                return res.status(401).json('Token not valid3');
+
+            req.user = tokenInfo.userId;
+
+            next()
+        } catch (e) {
+            next(e);
         }
     }
 }
